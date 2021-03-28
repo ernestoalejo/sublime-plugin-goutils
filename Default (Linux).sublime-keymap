@@ -1,0 +1,5 @@
+[
+    { 
+        "keys": ["f5"], "command": "go_utils_run_test_under_cursor"
+    }
+]
