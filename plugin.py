@@ -78,8 +78,8 @@ class GoUtilsGoimportsCommand(sublime_plugin.TextCommand):
       '/usr/local/go/bin/go',
       'list',
       '-f', '{{.Module}}',
-      folder,
-    ], stdout=subprocess.PIPE, universal_newlines=True)
+      '.',
+    ], stdout=subprocess.PIPE, universal_newlines=True, cwd=folder)
 
     gopath = subprocess.run([
       '/usr/local/go/bin/go',
@@ -87,7 +87,7 @@ class GoUtilsGoimportsCommand(sublime_plugin.TextCommand):
       'GOPATH',
     ], stdout=subprocess.PIPE, universal_newlines=True)
     env = os.environ.copy()
-    env["PATH"] = ':'.join([env["PATH"], os.path.join(gopath.stdout.strip(), 'bin')])
+    env["PATH"] = ':'.join([env["PATH"], '/usr/local/go/bin', os.path.join(gopath.stdout.strip(), 'bin')])
     p = subprocess.Popen([
       'goimports',
       '-srcdir', folder,
@@ -105,6 +105,7 @@ class GoUtilsGoimportsCommand(sublime_plugin.TextCommand):
       self.view.set_status('go', 'ERROR: ' + overview)
     else:
       self.view.set_status('go', '')
+      self.view.replace(edit, selection, p.stdout.read().decode('utf8'))
 
 
 class GoImportsListener(sublime_plugin.EventListener):
